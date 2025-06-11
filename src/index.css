@@ -1,0 +1,9 @@
+/* Habilita Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Extras opcionales */
+html, body, #root {
+  height: 100%;
+}
