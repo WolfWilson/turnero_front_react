@@ -7,6 +7,7 @@ export default function Layout() {
         <h1 className="text-xl font-semibold">Turnero</h1>
         <nav className="mt-2 flex gap-4 text-sm">
           <Link to="/" className="[&.active]:underline">Kiosco</Link>
+          <Link to="/pantalla" className="[&.active]:underline">Pantalla</Link>
           <Link to="/login" className="[&.active]:underline">Login</Link>
           <Link to="/operador" className="[&.active]:underline">Operador</Link>
           <Link to="/admin" className="[&.active]:underline">Admin</Link>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { loginFakeLDAP } from '../api/auth';
+import { useAuth } from './useAuth';
 import { useNavigate } from '@tanstack/react-router';
 
 export default function Login() {
   const [usuario, setUsuario] = useState('');
   const [clave, setClave] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -13,9 +15,8 @@ export default function Login() {
     setError('');
     try {
       const sesion = await loginFakeLDAP(usuario, clave);
-      // Guarda el token local para futuras llamadas (localStorage, zustand, etc.)
-      localStorage.setItem('sesion', JSON.stringify(sesion));
-      navigate({ to: '/' }); // Redirigir a inicio
+      login(sesion);
+      navigate({ to: sesion.rol === 'DIRECTOR' ? '/admin' : '/operador' });
     } catch (err) {
       setError((err as Error).message);
     }
@@ -25,12 +26,16 @@ export default function Login() {
     <form
       onSubmit={handleSubmit}
       className="max-w-sm mx-auto bg-white p-6 rounded shadow"
+      autoComplete="off" // 🚫 Desactiva autocompletar de Chrome
     >
       <h2 className="text-xl font-semibold mb-4">Ingreso de operadores</h2>
 
-      <label className="block mb-2 text-sm font-medium">
+      <label htmlFor="usuario" className="block mb-2 text-sm font-medium">
         Usuario
         <input
+          id="usuario"
+          name="usuario" // ✅ NO usar "username"
+          autoComplete="off"
           className="mt-1 w-full border rounded px-3 py-2"
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
@@ -38,10 +43,13 @@ export default function Login() {
         />
       </label>
 
-      <label className="block mb-4 text-sm font-medium">
+      <label htmlFor="clave" className="block mb-4 text-sm font-medium">
         Contraseña
         <input
+          id="clave"
+          name="clave" // ✅ NO usar "password"
           type="password"
+          autoComplete="off"
           className="mt-1 w-full border rounded px-3 py-2"
           value={clave}
           onChange={(e) => setClave(e.target.value)}

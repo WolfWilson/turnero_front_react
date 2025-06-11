@@ -1,4 +1,3 @@
-import { Outlet } from '@tanstack/react-router';
 import {
   Router,
   RouterProvider,
@@ -10,8 +9,11 @@ import Login from './auth/Login';
 import KioskPage from './kiosko/KioskPage';
 import DeskPage from './operator/DeskPage';
 import AdminDash from './admin/AdminDash';
+import RequireAuth from './auth/RequireAuth';
+import DisplayPage from './monitor/DisplayPage';
 
-/* 1. Rutas raíz */
+
+/* 1. Ruta raíz (layout) */
 const rootRoute = new RootRoute({
   component: Layout,
 });
@@ -23,6 +25,13 @@ const kioskRoute = new Route({
   component: KioskPage,
 });
 
+/* … rutas hijas … */
+const screenRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/pantalla',
+  component: DisplayPage,
+});
+
 const loginRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/login',
@@ -32,26 +41,35 @@ const loginRoute = new Route({
 const operatorRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/operador',
-  component: DeskPage,
+  component: () => (
+    <RequireAuth role={['OPERADOR', 'DIRECTOR']}>
+      <DeskPage />
+    </RequireAuth>
+  ),
 });
 
 const adminRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/admin',
-  component: AdminDash,
+  component: () => (
+    <RequireAuth role="DIRECTOR">
+      <AdminDash />
+    </RequireAuth>
+  ),
 });
 
 /* 3. Árbol y router */
 const routeTree = rootRoute.addChildren([
-  kioskRoute,
-  loginRoute,
-  operatorRoute,
-  adminRoute,
+  kioskRoute,                //turnero token
+  loginRoute,                  //login
+  operatorRoute,              //operadores
+  adminRoute,                 //sección del admin 
+  screenRoute,             //pantalla de turnos
 ]);
 
 export const router = new Router({ routeTree });
 
-/* 4. Componente proveedor – lo usaremos en App */
+/* 4. Provider que usarás en <App /> */
 export function TurneroRouterProvider() {
   return <RouterProvider router={router} />;
 }

@@ -1,0 +1,5 @@
+usuario: operador / clave: 1234 → redirige a /operador.
+
+usuario: admin / clave: 1234 → redirige a /admin.
+
+usuario: otro / clave: 1234 → rol 'PUBLICO'; solo ve el kiosco.
